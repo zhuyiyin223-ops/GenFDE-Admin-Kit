@@ -1,0 +1,10 @@
+nicegui==3.17.0
+asyncpg==0.31.0
+tortoise-orm==1.1.8
+bcrypt==5.0.0
+PyJWT==2.14.0
+loguru==0.7.3
+ruff==0.16.8
+pytest==9.1.1
+openpyxl==3.1.5
+APScheduler==3.11.3

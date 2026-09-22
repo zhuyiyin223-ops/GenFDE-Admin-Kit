@@ -1,0 +1,25 @@
+[tool.tortoise]
+tortoise_orm = "settings.TORTOISE_ORM"
+
+[tool.ruff]
+line-length = 120
+target-version = "py310"
+
+[tool.ruff.lint]
+ignore = [
+    "BLE001", # 业务边界统一捕获异常并通过 Loguru 保留堆栈。
+    "DTZ001", # 数据库与现有业务统一使用本地无时区时间。
+    "DTZ005",
+    "DTZ006",
+    "DTZ007",
+    "DTZ011",
+    "PLE1205", # Loguru 使用大括号参数化格式，Pylint 规则会误判。
+    "RUF012", # Tortoise Meta 配置和服务常量需要共享类级集合。
+    "SIM117", # NiceGUI 通过嵌套 with 表达组件父子层级。
+]
+
+[tool.ruff.lint.per-file-ignores]
+"apis/__init__.py" = ["B008"]  # FastAPI 官方依赖注入写法。
+"models.py" = ["PIE796"]  # 枚举别名用于兼容历史成员名。
+"modules/biz_weighing_record/page_controller.py" = ["S110", "S112"]
+"modules/warehouse_entry/page_forms.py" = ["S110", "S112"]

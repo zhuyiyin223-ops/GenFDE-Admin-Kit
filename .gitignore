@@ -1,0 +1,12 @@
+.venv/
+__pycache__/
+.idea
+.nicegui/
+data/upload/
+*.py[cod]
+.DS_Store
+.env
+*.pem
+migrations
+logs
+data
