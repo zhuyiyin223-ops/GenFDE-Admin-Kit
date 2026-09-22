@@ -5,8 +5,8 @@
 [![Tortoise ORM](https://img.shields.io/badge/Tortoise--ORM-1.x-1C7C54)](https://tortoise.github.io/)
 [![License: MIT](https://img.shields.io/badge/License-MIT-blue)](LICENSE)
 
-**基于 NiceGUI 构建，FDE 快速交付、生产环境可用的小而美全栈项目骨架。 本项目集成了现代 Web
-开发所需的核心配置与常用库，帮你省去数据库连接、身份认证、RBAC权限、异步任务、开放API、操作审计、定时任务、自动化部署等繁琐的初始化工作。真正做到克隆即用，专注于你的业务逻辑。**
+**基于 NiceGUI 构建，FDE 快速交付、生产环境可用的小而美全栈项目骨架。 集成了现代 Web
+开发所需的核心配置、常用库和工程约束。开箱即用，AI Coding 产出稳定，专注于你的业务逻辑。**
 
 ## AI-Native 核心优势
 
