@@ -20,7 +20,6 @@ from nicegui import ui
 from modules.list_page import ListPageFacade
 from modules.ui.helpers import clear_element
 
-from .client_service import ApiClientService
 from .page_forms import ClientFormData, ClientFormRefs, build_client_form, collect_client_form_data
 from .page_table import (
     CLIENT_LIST_SPEC,
@@ -30,8 +29,15 @@ from .page_table import (
     format_request_log_for_display,
     format_token_for_display,
 )
-from .request_log_service import ApiRequestLogService
-from .token_service import ApiTokenService
+from .services import (
+    create_client,
+    get_client_detail,
+    get_log_detail,
+    search_clients,
+    search_logs,
+    search_tokens,
+    update_client,
+)
 
 
 class ApiClientPageController:
@@ -49,7 +55,7 @@ class ApiClientPageController:
         if not form_data.client_id or not form_data.password:
             ui.notify("请填写必填字段：账号和密码", type="negative")
             return
-        success, message, _ = await ApiClientService.create_client(
+        success, message, _ = await create_client(
             client_id=form_data.client_id,
             client_secret=form_data.password,
             name=form_data.name,
@@ -72,7 +78,7 @@ class ApiClientPageController:
                 ui.notify("请输入新密码", type="negative")
                 return
             new_secret = form_data.password
-        success, message = await ApiClientService.update_client(
+        success, message = await update_client(
             client_id=client_id,
             name=form_data.name,
             is_active=form_data.is_active,
@@ -131,7 +137,7 @@ class ApiClientPageController:
 
     async def open_edit_dialog(self, client_data: dict[str, Any]) -> None:
         """打开编辑客户端弹窗。"""
-        detail = await ApiClientService.get_client_detail(int(client_data["id"]))
+        detail = await get_client_detail(int(client_data["id"]))
         if not detail:
             ui.notify("客户端不存在", type="negative")
             return
@@ -149,7 +155,7 @@ class ApiClientPageController:
     async def update_table(self) -> None:
         """刷新客户端表格和分页。"""
         current_page, page_size = self.list_page.page_and_size()
-        result = await ApiClientService.search_clients(
+        result = await search_clients(
             page=current_page,
             page_size=page_size,
             keyword=self.list_page.search_state.keyword,
@@ -175,7 +181,7 @@ class ApiTokenLogController:
     async def update_table(self) -> None:
         """刷新令牌日志表格和分页。"""
         current_page, page_size = self.list_page.page_and_size()
-        result = await ApiTokenService.search_tokens(
+        result = await search_tokens(
             page=current_page,
             page_size=page_size,
             keyword=self.list_page.search_state.keyword,
@@ -202,7 +208,7 @@ class ApiRequestLogController:
     async def update_table(self) -> None:
         """刷新请求日志表格和分页。"""
         current_page, page_size = self.list_page.page_and_size()
-        result = await ApiRequestLogService.search_logs(
+        result = await search_logs(
             page=current_page,
             page_size=page_size,
             keyword=self.list_page.search_state.keyword,
@@ -229,7 +235,7 @@ class ApiRequestLogController:
 
     async def open_detail_dialog(self, log_id: int) -> None:
         """打开请求日志详情弹窗。"""
-        detail = await ApiRequestLogService.get_log_detail(log_id)
+        detail = await get_log_detail(log_id)
         if not detail:
             ui.notify("请求日志不存在", type="negative")
             return

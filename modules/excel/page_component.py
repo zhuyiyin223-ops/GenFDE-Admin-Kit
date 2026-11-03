@@ -6,7 +6,7 @@ from typing import Any
 
 from nicegui import ui
 
-from .service import ExcelFile
+from .services import ExcelFile
 
 
 def render_export_button(*, on_click: Any) -> Any:

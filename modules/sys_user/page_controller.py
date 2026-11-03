@@ -25,7 +25,16 @@ from .page_forms import (
     render_user_attachment_preview,
 )
 from .page_table import USER_LIST_SPEC, format_user_for_display
-from .service import UserAttachmentService, UserService
+from .services import (
+    create_user,
+    export_users,
+    get_role_options,
+    get_user_detail,
+    list_attachments,
+    save_attachments,
+    search_users,
+    update_user,
+)
 
 DEFAULT_STATUS = None
 
@@ -33,7 +42,7 @@ DEFAULT_STATUS = None
 async def load_role_options(*, include_role_ids: list[int] | None = None) -> dict[int, str]:
     """加载角色选项，仅返回页面构建所需数据。"""
     try:
-        return await UserService.get_role_options(include_role_ids=include_role_ids)
+        return await get_role_options(include_role_ids=include_role_ids)
     except Exception as exc:
         ui.notify(f"加载角色数据失败: {exc!s}", type="negative")
         return {}
@@ -68,7 +77,7 @@ class UserPageController:
             column_filter_specs: Any = (),
     ) -> dict[str, Any]:
         """透传用户查询到 service，不在页面层拼装查询逻辑。"""
-        result = await UserService.search_users(
+        result = await search_users(
             page=page,
             page_size=page_size,
             keyword=keyword,
@@ -132,7 +141,7 @@ class UserPageController:
             return
         set_export_loading(self.list_page.export_button, True)
         try:
-            excel_file = await UserService.export_users(
+            excel_file = await export_users(
                 keyword=self.list_page.search_state.keyword,
                 status=self.status,
                 **self.list_page.filter_kwargs(),
@@ -164,7 +173,7 @@ class UserPageController:
             ui.notify("非管理员账号必须分配至少一个角色", type="negative")
             return
 
-        success, message, user = await UserService.create_user(
+        success, message, user = await create_user(
             userid=form_data.userid,
             password=form_data.password,
             name=form_data.username,
@@ -206,7 +215,7 @@ class UserPageController:
             ui.notify("新密码必须为6到16位，包含大小写字母、数字、特殊符号", type="negative")
             return
 
-        success, message = await UserService.update_user(
+        success, message = await update_user(
             user_id=user_id,
             userid=form_data.userid,
             name=form_data.username,
@@ -244,7 +253,7 @@ class UserPageController:
     ) -> bool:
         """保存附件管理弹框中新选择的附件，并刷新列表数量。"""
         try:
-            await UserAttachmentService.save_attachments(
+            await save_attachments(
                 user_id=user_id,
                 userid=userid,
                 attachments=attachments,
@@ -293,7 +302,7 @@ class UserPageController:
             return
 
         user_id = int(row["id"])
-        user_detail = await UserService.get_user_detail(user_id)
+        user_detail = await get_user_detail(user_id)
         if not user_detail:
             ui.notify("用户不存在", type="negative")
             return
@@ -347,7 +356,7 @@ class UserPageController:
             return
 
         try:
-            attachments = await UserAttachmentService.list_attachments(int(row["id"]))
+            attachments = await list_attachments(int(row["id"]))
         except Exception:
             ui.notify("附件加载失败，请确认数据库迁移已执行", type="negative")
             return

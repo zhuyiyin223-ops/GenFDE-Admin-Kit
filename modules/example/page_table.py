@@ -6,7 +6,7 @@ from typing import Any
 
 from nicegui import ui
 
-from modules.column_filter.service import (
+from modules.column_filter.services import (
     ColumnFilterKind,
     ColumnFilterSpec,
     ColumnFilterValueType,
@@ -14,7 +14,7 @@ from modules.column_filter.service import (
 )
 from modules.list_page import ListPageSpec
 
-from .service import DONE_LABELS
+from .services import DONE_LABELS
 
 ITEM_TABLE_COLUMNS = [
     {"name": "index", "label": "#", "field": "index"},

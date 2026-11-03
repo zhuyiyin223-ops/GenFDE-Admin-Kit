@@ -6,8 +6,7 @@ from fastapi import Depends, HTTPException, Request, status
 from fastapi.security import HTTPAuthorizationCredentials, HTTPBearer
 
 from models import ApiClient
-from modules.sys_api.auth_service import decode_token, ensure_ip_allowed
-
+from modules.sys_api.services import decode_token, ensure_ip_allowed
 
 security = HTTPBearer(auto_error=False)
 

@@ -11,7 +11,21 @@ from nicegui.events import SortableEventArguments
 
 from modules.ui.helpers import clear_element
 
-from .service import EMPTY_SCHEME_ERROR, FilterScheme, FilterSchemeConfig, FilterSchemeService
+from .services import (
+    EMPTY_SCHEME_ERROR,
+    FilterScheme,
+    FilterSchemeConfig,
+    create_scheme,
+    delete_scheme,
+    describe_active_fields,
+    describe_values,
+    encode_values,
+    is_default_values,
+    list_schemes,
+    to_widget_values,
+    update_scheme,
+    values_equal,
+)
 
 CHIP_ROW_CLASSES = "ng-filter-scheme-row w-full items-center justify-start gap-2 flex-wrap min-h-0 mt-2"
 CHIP_CLASSES = "ng-filter-scheme-chip max-w-40"
@@ -197,7 +211,7 @@ class FilterSchemeController:
         if self._chip_row is None:
             return
         try:
-            self.state.schemes = await FilterSchemeService.list_schemes(
+            self.state.schemes = await list_schemes(
                 user_id=self.get_user_id(),
                 config=self.config,
             )
@@ -221,9 +235,9 @@ class FilterSchemeController:
         if self._save_dialog is None:
             self._save_dialog = ui.dialog()
         current_values = self.bindings.get_values()
-        items = FilterSchemeService.describe_values(current_values, config=self.config)
-        if not items or FilterSchemeService.is_default_values(
-            FilterSchemeService.encode_values(current_values, config=self.config),
+        items = describe_values(current_values, config=self.config)
+        if not items or is_default_values(
+            encode_values(current_values, config=self.config),
             config=self.config,
         ):
             ui.notify(EMPTY_SCHEME_ERROR, type="warning")
@@ -258,7 +272,7 @@ class FilterSchemeController:
             return
         self._applying = True
         try:
-            widget_values = FilterSchemeService.to_widget_values(scheme.values, config=self.config)
+            widget_values = to_widget_values(scheme.values, config=self.config)
             self.bindings.set_values(widget_values)
             self.state.active_scheme_id = scheme.id
             await self.bindings.refresh()
@@ -277,17 +291,17 @@ class FilterSchemeController:
 
     def _current_stored_values(self) -> dict[str, Any]:
         """读取当前控件并编码为存储形态。"""
-        return FilterSchemeService.encode_values(self.bindings.get_values(), config=self.config)
+        return encode_values(self.bindings.get_values(), config=self.config)
 
     def _matching_scheme_id(self) -> int | None:
         """当前筛选命中的方案 ID。"""
         current = self._current_stored_values()
         if self.state.active_scheme_id is not None:
             scheme = self._find_scheme(self.state.active_scheme_id)
-            if scheme is not None and FilterSchemeService.values_equal(current, scheme.values, config=self.config):
+            if scheme is not None and values_equal(current, scheme.values, config=self.config):
                 return scheme.id
         for scheme in self.state.schemes:
-            if FilterSchemeService.values_equal(current, scheme.values, config=self.config):
+            if values_equal(current, scheme.values, config=self.config):
                 return scheme.id
         return None
 
@@ -339,7 +353,7 @@ class FilterSchemeController:
     async def _reload_schemes(self) -> None:
         """重新拉取方案列表并重绘，不改变当前筛选。"""
         try:
-            self.state.schemes = await FilterSchemeService.list_schemes(
+            self.state.schemes = await list_schemes(
                 user_id=self.get_user_id(),
                 config=self.config,
             )
@@ -360,7 +374,7 @@ class FilterSchemeController:
         self._edit_scheme_id = scheme.id
         self._edit_draft = dict(scheme.values)
         self._edit_enabled_keys = [
-            key for key, _, _ in FilterSchemeService.describe_active_fields(scheme.values, config=self.config)
+            key for key, _, _ in describe_active_fields(scheme.values, config=self.config)
         ]
         self._edit_selected_key = None
         self._edit_item_keys = {}
@@ -465,7 +479,7 @@ class FilterSchemeController:
         label = self._field_label(key)
         if not enabled:
             return label
-        for item_key, _, text in FilterSchemeService.describe_active_fields(
+        for item_key, _, text in describe_active_fields(
             self._edit_draft or {},
             config=self.config,
         ):
@@ -674,7 +688,7 @@ class FilterSchemeController:
     async def _submit_create(self, name_input: Any) -> None:
         """提交新建方案。"""
         try:
-            scheme = await FilterSchemeService.create_scheme(
+            scheme = await create_scheme(
                 user_id=self.get_user_id(),
                 config=self.config,
                 name=str(name_input.value or ""),
@@ -702,7 +716,7 @@ class FilterSchemeController:
         enabled = set(self._edit_enabled_keys or [])
         values = {key: value for key, value in draft.items() if key in enabled}
         try:
-            updated = await FilterSchemeService.update_scheme(
+            updated = await update_scheme(
                 user_id=self.get_user_id(),
                 config=self.config,
                 scheme_id=scheme_id,
@@ -716,7 +730,7 @@ class FilterSchemeController:
             ui.notify(str(exc), type="warning")
             return
         was_active = self.state.active_scheme_id == scheme_id
-        values_changed = original is None or not FilterSchemeService.values_equal(
+        values_changed = original is None or not values_equal(
             original.values,
             updated.values,
             config=self.config,
@@ -727,7 +741,7 @@ class FilterSchemeController:
         if was_active and values_changed:
             self._applying = True
             try:
-                widget_values = FilterSchemeService.to_widget_values(updated.values, config=self.config)
+                widget_values = to_widget_values(updated.values, config=self.config)
                 self.bindings.set_values(widget_values)
                 self.state.active_scheme_id = updated.id
                 await self.bindings.refresh()
@@ -746,7 +760,7 @@ class FilterSchemeController:
     async def _delete_scheme(self, scheme: FilterScheme) -> None:
         """删除指定过滤方案。"""
         try:
-            await FilterSchemeService.delete_scheme(
+            await delete_scheme(
                 user_id=self.get_user_id(),
                 config=self.config,
                 scheme_id=scheme.id,

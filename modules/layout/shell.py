@@ -26,7 +26,7 @@ from modules.layout.navigation import (
 )
 from modules.layout.side_chrome import get_side_chrome
 from modules.layout.styles import apply_layout_styles
-from modules.permission.service import PermissionService
+from modules.permission.services import get_cached_user_permissions, get_first_accessible_path
 
 PageResult = TypeVar("PageResult")
 
@@ -107,11 +107,11 @@ async def admin_shell() -> RedirectResponse | None:
 
     content_pages = get_content_pages()
     current_path = _normalize_page_path(ui.context.client.sub_pages_router.current_path)
-    target_path = await PermissionService.get_first_accessible_path(user_id, preferred_path=current_path)
+    target_path = await get_first_accessible_path(user_id, preferred_path=current_path)
     if target_path in content_pages and current_path != target_path:
         return RedirectResponse(target_path)
 
-    permissions = await PermissionService.get_cached_user_permissions(user_id)
+    permissions = await get_cached_user_permissions(user_id)
     page_path = current_path if current_path in content_pages else target_path
     menu_categories, active_category, drawer_category = build_navigation_context(page_path, permissions)
     content_page = content_pages.get(page_path)

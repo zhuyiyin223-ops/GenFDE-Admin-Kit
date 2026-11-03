@@ -4,7 +4,7 @@ from __future__ import annotations
 
 from nicegui import ui
 
-from .service import BackgroundJob
+from .services import BackgroundJob
 
 
 def bind_job_progress(

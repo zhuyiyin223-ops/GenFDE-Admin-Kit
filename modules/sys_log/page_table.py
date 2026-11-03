@@ -7,7 +7,7 @@ from typing import Any
 from nicegui import ui
 
 from models import User
-from modules.column_filter.service import (
+from modules.column_filter.services import (
     ColumnFilterKind,
     ColumnFilterSpec,
     ColumnFilterValueType,
@@ -16,7 +16,7 @@ from modules.column_filter.service import (
 )
 from modules.list_page import ListPageSpec
 
-from .service import LogService
+from .services import OPERATION_TYPE_LABELS
 
 OPERATION_LOG_COLUMNS = [
     {"name": "index", "label": "#", "field": "index"},
@@ -50,7 +50,7 @@ OPERATION_COLUMN_FILTERS = (
         fields=("operation_type",),
         kind=ColumnFilterKind.SELECT,
         value_type=ColumnFilterValueType.INT,
-        options=options_from_mapping(LogService.OPERATION_TYPE_LABELS),
+        options=options_from_mapping(OPERATION_TYPE_LABELS),
     ),
     ColumnFilterSpec(name="module", label="模块", fields=("module",)),
     ColumnFilterSpec(name="action", label="动作", fields=("action",)),

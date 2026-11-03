@@ -16,7 +16,7 @@ from typing import Any
 from nicegui import ui
 
 from models import ApiClient
-from modules.column_filter.service import (
+from modules.column_filter.services import (
     ColumnFilterKind,
     ColumnFilterOption,
     ColumnFilterSpec,
@@ -24,7 +24,7 @@ from modules.column_filter.service import (
     options_from_mapping,
     related_text_spec,
 )
-from modules.keyword_search.service import STATUS_LABELS
+from modules.keyword_search.services import STATUS_LABELS
 from modules.list_page import ListPageSpec
 
 CLIENT_TABLE_COLUMNS = [

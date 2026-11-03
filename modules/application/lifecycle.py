@@ -19,7 +19,7 @@ from modules.application.database import (
 from modules.application.log_setup import setup_logging
 from modules.cron_job import scheduler
 from modules.event_hub import EventHub
-from modules.login.service import LoginService
+from modules.login.services import ensure_admin_user
 from settings import ADMIN, APP, SECRETS, TORTOISE_ORM
 
 RUNTIME_DATA_DIRECTORIES = (
@@ -54,7 +54,7 @@ class ApplicationLifecycle:
         if APP.env == "develop":
             await ensure_initial_migrations()
             await apply_migrations()
-        await LoginService.ensure_admin_user(
+        await ensure_admin_user(
             userid=ADMIN.userid,
             password=SECRETS.admin_password,
             name=ADMIN.name,
@@ -64,7 +64,7 @@ class ApplicationLifecycle:
 
     async def shutdown(self) -> None:
         """先停止调度器与后台任务 Manager，解绑事件循环，再关闭 ORM 连接。"""
-        from modules.background_job.service import shutdown_background_jobs
+        from modules.background_job.services import shutdown_background_jobs
 
         if scheduler.running:
             scheduler.shutdown()

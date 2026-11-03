@@ -13,9 +13,7 @@ from fastapi import HTTPException, Request
 from loguru import logger
 from starlette.responses import Response
 
-from modules.sys_api.auth_service import decode_token
-from modules.sys_api.client_service import ApiClientService
-from modules.sys_api.request_log_service import ApiRequestLogService
+from modules.sys_api.services import create_log, decode_token, get_active_client_by_client_id
 
 if TYPE_CHECKING:
     from models import ApiClient
@@ -74,7 +72,7 @@ async def _extract_client_info(
             payload = decode_token(token, "access")
             client_id = payload.get("sub")
             if client_id:
-                client = await ApiClientService.get_active_client_by_client_id(client_id)
+                client = await get_active_client_by_client_id(client_id)
                 return client, str(client_id)
         except HTTPException:
             pass
@@ -82,7 +80,7 @@ async def _extract_client_info(
     if isinstance(request_json, dict):
         client_id = request_json.get("client_id")
         if client_id:
-            client = await ApiClientService.get_active_client_by_client_id(client_id)
+            client = await get_active_client_by_client_id(client_id)
             return client, str(client_id)
 
     return None, None
@@ -116,7 +114,7 @@ async def api_request_log_middleware(request: Request, call_next):
 
     try:
         client, client_id_text = await _extract_client_info(request, request_json)
-        await ApiRequestLogService.create_log(
+        await create_log(
             client=client,
             client_id_text=client_id_text,
             method=request.method,

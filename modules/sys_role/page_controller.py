@@ -16,7 +16,7 @@ from modules.ui.helpers import clear_element
 
 from .page_forms import RoleFormRefs, build_role_form
 from .page_table import ROLE_LIST_SPEC, format_role_for_display
-from .service import RoleService
+from .services import create_role, export_roles, get_role_by_id, get_roles_with_details, update_role
 
 DEFAULT_STATUS = None
 
@@ -94,7 +94,7 @@ class RolePageController:
         keyword: str = "",
     ) -> dict[str, Any]:
         """透传角色查询到 service，不在页面层拼装业务逻辑。"""
-        result = await RoleService.get_roles_with_details(
+        result = await get_roles_with_details(
             page=page,
             page_size=page_size,
             keyword=keyword,
@@ -116,7 +116,7 @@ class RolePageController:
             return
         set_export_loading(self.list_page.export_button, True)
         try:
-            excel_file = await RoleService.export_roles(
+            excel_file = await export_roles(
                 keyword=self.list_page.search_state.keyword,
                 status=self.status,
                 **self.list_page.filter_kwargs(),
@@ -179,7 +179,7 @@ class RolePageController:
             return
 
         try:
-            role = await RoleService.create_role(
+            role = await create_role(
                 name=role_name,
                 permission_codes=self._collect_selected_permissions(form),
             )
@@ -207,7 +207,7 @@ class RolePageController:
 
         is_active = bool(form.is_active.value) if form.is_active is not None else True
         try:
-            role = await RoleService.update_role(
+            role = await update_role(
                 role_id=role_id,
                 name=role_name,
                 permission_codes=self._collect_selected_permissions(form),
@@ -248,7 +248,7 @@ class RolePageController:
             return
 
         role_id = int(row["id"])
-        role_detail = await RoleService.get_role_by_id(role_id)
+        role_detail = await get_role_by_id(role_id)
         if not role_detail:
             ui.notify("角色不存在", type="negative")
             return

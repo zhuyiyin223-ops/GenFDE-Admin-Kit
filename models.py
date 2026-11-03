@@ -1,6 +1,7 @@
 """框架级数据模型。
 
 公用枚举与全部 ORM 模型放在本文件。新增业务域时在此追加模型类。
+字段说明写在 ``Field(description=...)``，不使用 ``#:`` 源码注释。
 """
 
 from __future__ import annotations
@@ -8,7 +9,26 @@ from __future__ import annotations
 from enum import IntEnum
 
 from tortoise import fields
-from tortoise.models import Model
+from tortoise.models import Model, ModelMeta
+
+
+def _skip_model_source_comment_scan() -> None:
+    """跳过 Tortoise 为每个模型重读本文件源码。
+
+    字段说明写在 ``Field(description=...)``，本文件不使用 ``#:`` 注释。
+    不跳过时，每个模型都会把整份 ``models.py`` 再解析一遍，启动耗时随模型数量按平方增长。
+    只关闭这步扫描，不改变字段、表说明和表结构。
+    """
+    original_new = ModelMeta.__new__
+
+    def _create_model(mcs: type, name: str, bases: tuple[type, ...], attrs: dict) -> type:
+        attrs.setdefault("_no_comments", True)
+        return original_new(mcs, name, bases, attrs)
+
+    ModelMeta.__new__ = _create_model
+
+
+_skip_model_source_comment_scan()
 
 
 class OperationType(IntEnum):

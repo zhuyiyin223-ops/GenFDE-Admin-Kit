@@ -7,9 +7,12 @@ from datetime import datetime
 from fastapi import APIRouter, HTTPException, Request, status
 from pydantic import BaseModel, Field
 
-from modules.sys_api.auth_service import ensure_ip_allowed, issue_tokens_for_client, rotate_refresh_token
-from modules.sys_api.client_service import ApiClientService
-
+from modules.sys_api.services import (
+    authenticate_client,
+    ensure_ip_allowed,
+    issue_tokens_for_client,
+    rotate_refresh_token,
+)
 
 router = APIRouter(prefix="/api/auth", tags=["auth"])
 
@@ -40,7 +43,7 @@ class RefreshRequest(BaseModel):
 @router.post("/token", response_model=TokenResponse)
 async def issue_token(payload: TokenRequest, request: Request):
     """使用客户端账号密码换取访问令牌和刷新令牌。"""
-    client = await ApiClientService.authenticate_client(payload.client_id, payload.client_secret)
+    client = await authenticate_client(payload.client_id, payload.client_secret)
     if not client:
         raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="Invalid client credentials")
 

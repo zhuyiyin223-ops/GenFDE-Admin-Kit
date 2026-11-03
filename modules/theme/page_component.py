@@ -7,7 +7,7 @@ from typing import Any
 from nicegui import ui
 
 from modules.theme.catalog import Theme, list_themes
-from modules.theme.service import ThemeService
+from modules.theme.services import ThemeService
 
 
 def build_theme_button() -> None:

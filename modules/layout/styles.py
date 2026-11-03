@@ -5,7 +5,7 @@
 
 from nicegui import ui
 
-from modules.theme.service import ThemeService
+from modules.theme.services import ThemeService
 
 LAYOUT_STYLE = """
 <style>

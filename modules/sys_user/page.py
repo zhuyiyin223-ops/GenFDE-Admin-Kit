@@ -13,7 +13,7 @@ from modules.permission.guard import check_permission, require_permission
 
 from .page_controller import UserPageController
 from .page_table import build_user_table
-from .service import UserAttachmentService
+from .services import get_attachment_file
 
 
 @app.get("/sys/user/attachments/{attachment_id}/content")
@@ -25,7 +25,7 @@ async def get_user_attachment_content(
     if not await check_permission(PermissionItem.SYS_USER_QUERY.code):
         raise HTTPException(status_code=403, detail="没有查看用户附件的权限")
 
-    attachment_file = await UserAttachmentService.get_attachment_file(attachment_id)
+    attachment_file = await get_attachment_file(attachment_id)
     if attachment_file is None:
         raise HTTPException(status_code=404, detail="附件不存在")
 

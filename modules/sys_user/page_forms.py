@@ -17,7 +17,8 @@ from modules.ui.attachment_types import AttachmentItem, is_image_attachment
 from modules.ui.attachment_upload import build_attachment_upload
 from modules.ui.helpers import clear_element
 
-from .service import USER_ATTACHMENT_MAX_FILES, USER_ATTACHMENT_MAX_SIZE, UserService
+from .services import USER_ATTACHMENT_MAX_FILES, USER_ATTACHMENT_MAX_SIZE
+from .services import is_password_policy_valid as _is_password_policy_valid
 
 DEFAULT_PASSWORD_LENGTH = 6
 PASSWORD_SPECIAL_CHARS = "!@#$%^&*"
@@ -34,7 +35,7 @@ def _max_len(max_len: int):
 
 def is_password_policy_valid(password: str) -> bool:
     """复用 service 层密码规则，不在页面层重复维护细节。"""
-    return UserService.is_password_policy_valid(password)
+    return _is_password_policy_valid(password)
 
 
 USERID_VALIDATION = {

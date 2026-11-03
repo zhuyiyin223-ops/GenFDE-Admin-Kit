@@ -8,7 +8,7 @@ from functools import wraps
 
 from nicegui import app, ui
 
-from modules.permission.service import PermissionService
+from modules.permission.services import has_permission
 
 
 def require_permission(permission_code: str):
@@ -34,4 +34,4 @@ async def check_permission(permission_code: str) -> bool:
     user_id = app.storage.user.get("user_id")
     if not isinstance(user_id, int):
         return False
-    return await PermissionService.has_permission(user_id, permission_code)
+    return await has_permission(user_id, permission_code)

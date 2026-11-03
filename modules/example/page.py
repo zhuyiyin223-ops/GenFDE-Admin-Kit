@@ -1,4 +1,4 @@
-"""业务域：示例事项页面入口。对照 AGENTS.md「新增业务域」复制本页结构。"""
+"""业务域：示例事项页面入口。对照 AGENTS.md 项目结构复制本页结构。"""
 
 from __future__ import annotations
 

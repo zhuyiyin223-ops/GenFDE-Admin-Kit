@@ -11,7 +11,7 @@ from collections.abc import Callable
 from apscheduler.schedulers.asyncio import AsyncIOScheduler
 from loguru import logger
 
-from modules.sys_log.service import LogService
+from modules.sys_log.services import archive_and_cleanup_user_logs
 from settings import CRON
 
 from .database_backup import database_backup
@@ -39,7 +39,7 @@ def _add_daily_job(*, func: Callable[..., object], at: str, job_id: str) -> None
 async def _archive_and_cleanup_user_logs() -> None:
     """调用系统日志域的归档命令；失败不影响调度器。"""
     try:
-        await LogService.archive_and_cleanup_user_logs()
+        await archive_and_cleanup_user_logs()
     except Exception:
         logger.exception("操作日志归档清理任务执行失败")
 

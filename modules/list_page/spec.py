@@ -6,7 +6,7 @@ from collections.abc import Mapping, Sequence
 from dataclasses import dataclass
 from typing import Any
 
-from modules.column_filter.service import ColumnFilterSpec
+from modules.column_filter.services import ColumnFilterSpec
 
 DEFAULT_PAGE_SIZE = 10
 

@@ -12,7 +12,7 @@ from modules.permission.definitions import PermissionItem
 from modules.permission.guard import check_permission
 
 from .page_table import OPERATION_LIST_SPEC, render_colored_log_lines
-from .service import LogService
+from .services import export_user_logs, query_user_logs, read_error_log_lines
 
 
 class SysLogPageController:
@@ -34,7 +34,7 @@ class SysLogPageController:
             return
         set_export_loading(self.list_page.export_button, True)
         try:
-            excel_file = await LogService.export_user_logs(
+            excel_file = await export_user_logs(
                 keyword=self.list_page.search_state.keyword,
                 date_range=self.date_range,
                 operation_type=self.operation_type,
@@ -63,7 +63,7 @@ class SysLogPageController:
         if not self.list_page.is_mounted:
             return
         current_page, page_size = self.list_page.page_and_size()
-        result = await LogService.query_user_logs(
+        result = await query_user_logs(
             page=current_page,
             page_size=page_size,
             keyword=self.list_page.search_state.keyword,
@@ -79,5 +79,5 @@ class SysLogPageController:
 
     async def refresh_error_logs(self) -> None:
         """刷新错误日志内容。"""
-        lines = await LogService.read_error_log_lines(limit=500)
+        lines = await read_error_log_lines(limit=500)
         render_colored_log_lines(self.error_log_view, lines)

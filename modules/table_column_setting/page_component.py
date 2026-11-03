@@ -2,12 +2,18 @@
 
 from __future__ import annotations
 
+from collections.abc import Callable, Iterable
 from dataclasses import dataclass
-from typing import Any, Callable, Iterable
+from typing import Any
 
 from nicegui import app, ui
 
-from modules.table_column_setting.service import TableColumnSettingConfig, TableColumnSettingService
+from modules.table_column_setting.services import (
+    TableColumnSettingConfig,
+    get_user_visible_column_names,
+    normalize_visible_column_names,
+    save_user_visible_column_names,
+)
 
 
 def apply_table_visible_columns(table: Any, column_names: Iterable[str] | None) -> None:
@@ -45,7 +51,7 @@ class TableColumnSettingController:
         self.get_tables = get_tables
         self.get_user_id = get_user_id or self._default_get_user_id
         self.state = TableColumnSettingState(
-            visible_column_names=TableColumnSettingService.normalize_visible_column_names(
+            visible_column_names=normalize_visible_column_names(
                 config.default_visible_column_names,
                 config=config,
             )
@@ -84,7 +90,7 @@ class TableColumnSettingController:
 
     async def initialize(self) -> None:
         """初始化当前账号的列显示偏好。"""
-        self.state.visible_column_names = await TableColumnSettingService.get_user_visible_column_names(
+        self.state.visible_column_names = await get_user_visible_column_names(
             user_id=self.get_user_id(),
             config=self.config,
         )
@@ -101,7 +107,7 @@ class TableColumnSettingController:
         order_index = {
             column_name: index
             for index, column_name in enumerate(
-                TableColumnSettingService.normalize_visible_column_names(
+                normalize_visible_column_names(
                     self.config.default_visible_column_names,
                     config=self.config,
                 )
@@ -129,7 +135,7 @@ class TableColumnSettingController:
 
         self.state.is_saving = True
         try:
-            self.state.visible_column_names = await TableColumnSettingService.save_user_visible_column_names(
+            self.state.visible_column_names = await save_user_visible_column_names(
                 user_id=self.get_user_id(),
                 visible_column_names=self.state.visible_column_names,
                 config=self.config,

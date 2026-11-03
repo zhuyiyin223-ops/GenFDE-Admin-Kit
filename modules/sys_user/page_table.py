@@ -7,14 +7,14 @@ from typing import Any
 from nicegui import ui
 
 from models import Role, UserRole
-from modules.column_filter.service import (
+from modules.column_filter.services import (
     ColumnFilterKind,
     ColumnFilterRelation,
     ColumnFilterSpec,
     ColumnFilterValueType,
     options_from_mapping,
 )
-from modules.keyword_search.service import STATUS_LABELS, YES_NO_LABELS
+from modules.keyword_search.services import STATUS_LABELS, YES_NO_LABELS
 from modules.list_page import ListPageSpec
 
 USER_TABLE_COLUMNS = [

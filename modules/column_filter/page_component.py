@@ -10,7 +10,7 @@ from nicegui import ui
 
 from modules.ui.helpers import clear_element
 
-from .service import (
+from .services import (
     DATE_SHORTCUTS,
     ColumnFilterSpec,
     ColumnFilterValue,

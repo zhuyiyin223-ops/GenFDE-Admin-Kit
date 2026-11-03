@@ -10,7 +10,7 @@ from nicegui import app
 from starlette.middleware.base import BaseHTTPMiddleware
 
 from models import User
-from modules.theme.service import ThemeService
+from modules.theme.services import ThemeService
 
 UNRESTRICTED_ROUTES = {"/login", "/logout"}
 UNRESTRICTED_PREFIXES = {"/static", "/_nicegui", "/api"}

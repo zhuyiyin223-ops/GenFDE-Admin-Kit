@@ -1,7 +1,7 @@
 """系统能力：进程内事件总线。可被业务域引用。
 
 用于单进程运行时的用户级事件投递；多进程部署时应替换为 Redis Pub/Sub 等外部消息通道。
-站内消息请走 ``MessageService``，不要直接向本总线发布。
+站内消息请走 ``send_message_to_user`` 或 ``send_message_to_users``，不要直接向本总线发布。
 """
 
 from __future__ import annotations

@@ -12,10 +12,10 @@ from nicegui import ui
 from modules.column_filter.page_component import ColumnFilterController
 from modules.excel.page_component import render_export_button
 from modules.filter_scheme.page_component import FilterSchemeBindings, FilterSchemeController
-from modules.filter_scheme.service import config_from_column_filters
+from modules.filter_scheme.services import config_from_column_filters
 from modules.keyword_search.page_component import render_keyword_search
 from modules.table_column_setting.page_component import TableColumnSettingController
-from modules.table_column_setting.service import TableColumnSettingConfig
+from modules.table_column_setting.services import TableColumnSettingConfig
 from modules.ui.helpers import render_page_title
 from modules.ui.paged_table import (
     compute_total_pages,

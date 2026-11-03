@@ -6,13 +6,13 @@ from typing import Any
 
 from nicegui import ui
 
-from modules.column_filter.service import (
+from modules.column_filter.services import (
     ColumnFilterKind,
     ColumnFilterSpec,
     ColumnFilterValueType,
     options_from_mapping,
 )
-from modules.keyword_search.service import STATUS_LABELS
+from modules.keyword_search.services import STATUS_LABELS
 from modules.list_page import ListPageSpec
 
 ROLE_RELATION_PREVIEW_LENGTH = 24

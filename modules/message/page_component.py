@@ -9,7 +9,14 @@ from typing import Any
 from nicegui import ui
 from nicegui.client import Client
 
-from modules.message.service import MessageService
+from modules.message.services import (
+    get_unread_count,
+    get_unread_messages,
+    mark_all_read,
+    mark_as_read,
+    subscribe,
+    unsubscribe,
+)
 
 
 class MessageController:
@@ -32,7 +39,7 @@ class MessageController:
             self.client.on_connect(self.start)
             self._lifecycle_bound = True
         if self.subscription_id is None:
-            self.subscription_id = MessageService.subscribe(
+            self.subscription_id = subscribe(
                 user_id=self.user_id,
                 handler=self.handle_event,
             )
@@ -43,7 +50,7 @@ class MessageController:
         """停止当前客户端的消息订阅。"""
         if self.subscription_id is None:
             return
-        MessageService.unsubscribe(
+        unsubscribe(
             user_id=self.user_id,
             subscriber_id=self.subscription_id,
         )
@@ -78,7 +85,7 @@ class MessageController:
             if inspect.isawaitable(clear_result):
                 await clear_result
 
-            messages = await MessageService.get_unread_messages(self.user_id)
+            messages = await get_unread_messages(self.user_id)
             if not messages:
                 with self.messages_container:
                     ui.label("暂无未读消息").classes("ng-muted-text text-sm")
@@ -104,13 +111,13 @@ class MessageController:
         """构建单条已读回调。"""
 
         async def handler() -> None:
-            await MessageService.mark_as_read(int(message["id"]), self.user_id)
+            await mark_as_read(int(message["id"]), self.user_id)
 
         return handler
 
     async def update_unread_count(self) -> int:
         """更新未读数量。"""
-        unread_count = await MessageService.get_unread_count(self.user_id)
+        unread_count = await get_unread_count(self.user_id)
         if self.unread_label:
             self.unread_label.set_text(f"你有 {unread_count} 条未读消息")
         if self.badge:
@@ -119,7 +126,7 @@ class MessageController:
 
     async def mark_all_messages_read(self) -> None:
         """全部标记为已读。"""
-        await MessageService.mark_all_read(self.user_id)
+        await mark_all_read(self.user_id)
 
 
 class MessageSideChrome:

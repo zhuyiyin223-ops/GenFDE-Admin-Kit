@@ -7,10 +7,10 @@ from nicegui import app, ui
 
 from models import OperationType
 from modules.log_audit import write_user_log
-from modules.permission.service import PermissionService
-from modules.theme.service import ThemeService
+from modules.permission.services import clear_user_permission_cache, get_first_accessible_path
+from modules.theme.services import ThemeService
 
-from .service import LoginService
+from .services import authenticate_user
 
 
 class LoginPageController:
@@ -32,7 +32,7 @@ class LoginPageController:
 
         ip_addr = _client_ip(self.request)
         try:
-            user = await LoginService.authenticate_user(userid=userid, password=password, ip_addr=ip_addr)
+            user = await authenticate_user(userid=userid, password=password, ip_addr=ip_addr)
         except RuntimeError as exc:
             ui.notify(str(exc), color="negative")
             return
@@ -53,8 +53,8 @@ class LoginPageController:
                 "theme_key": theme.key,
             }
         )
-        PermissionService.clear_user_permission_cache(int(user.id))
-        target_path = await PermissionService.get_first_accessible_path(
+        clear_user_permission_cache(int(user.id))
+        target_path = await get_first_accessible_path(
             int(user.id),
             preferred_path=self.redirect_to if self.redirect_to.startswith("/") else None,
         )

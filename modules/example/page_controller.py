@@ -13,7 +13,7 @@ from modules.ui.helpers import clear_element
 
 from .page_forms import ItemFormRefs, build_form_initial, build_item_form, collect_form_data
 from .page_table import ITEM_LIST_SPEC, format_item_for_display
-from .service import ExampleItemService
+from .services import create_item, delete_item, get_item, search_items, update_item
 
 
 class ExamplePageController:
@@ -52,7 +52,7 @@ class ExamplePageController:
         """保存新增事项。"""
         data = collect_form_data(form)
         try:
-            item = await ExampleItemService.create_item(
+            item = await create_item(
                 title=data.title,
                 content=data.content,
                 is_done=data.is_done,
@@ -78,7 +78,7 @@ class ExamplePageController:
         """保存编辑事项。"""
         data = collect_form_data(form)
         try:
-            item = await ExampleItemService.update_item(
+            item = await update_item(
                 item_id=item_id,
                 title=data.title,
                 content=data.content,
@@ -118,7 +118,7 @@ class ExamplePageController:
             ui.notify("无法获取事项信息", type="negative")
             return
         item_id = int(row["id"])
-        detail = await ExampleItemService.get_item(item_id)
+        detail = await get_item(item_id)
         if not detail:
             ui.notify("事项不存在", type="negative")
             return
@@ -158,7 +158,7 @@ class ExamplePageController:
     async def delete_item(self, item_id: int) -> None:
         """删除事项并刷新表格。"""
         try:
-            await ExampleItemService.delete_item(item_id)
+            await delete_item(item_id)
         except ValueError as exc:
             ui.notify(str(exc), type="negative")
             return
@@ -183,7 +183,7 @@ class ExamplePageController:
             return
         current_page, page_size = self.list_page.page_and_size()
         try:
-            result = await ExampleItemService.search_items(
+            result = await search_items(
                 page=current_page,
                 page_size=page_size,
                 keyword=self.list_page.search_state.keyword,

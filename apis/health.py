@@ -8,7 +8,6 @@ from fastapi import APIRouter, Depends
 
 from apis import get_current_client
 
-
 router = APIRouter(prefix="/api", tags=["health"])
 
 
