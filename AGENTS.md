@@ -60,8 +60,8 @@ GenFDE-Admin-Kit/
 │           ├── create_item.py
 │           ├── update_item.py
 │           └── delete_item.py
-├── pyproject.toml
-├── requirements.txt
+├── pyproject.toml               # 项目元数据与直接依赖
+├── uv.lock                      # 依赖锁定，必须提交
 └── README.md
 ```
 
@@ -71,6 +71,8 @@ GenFDE-Admin-Kit/
 - 涉及 ORM、网络请求、异步文件处理、事务等 I/O 操作的函数，优先使用 `async def`
 - 应用日志统一使用 loguru
 - `ruff check` 必须零警告（`pyproject.toml` 已 ignore 的不要再绕）
+- 依赖由 uv 管理。直接依赖写在 `pyproject.toml`，锁定结果在 `uv.lock`，解释器版本在 `.python-version`。新增依赖用 `uv add`
+  ，开发依赖用 `uv add --dev`。禁止再引入 `requirements.txt`，禁止手改 `uv.lock`
 
 ## 3. 命名规范
 
@@ -85,3 +87,12 @@ GenFDE-Admin-Kit/
 - `modules/` 子包 `__init__.py` 与顶层模块文件首句标明分类：装配层 / 系统能力 / 业务共用 / 业务域
 - 注释只说明职责、边界和必要上下文，不重复代码字面含义
 - 修改代码时必须同步更新注释
+
+## 5. NiceGUI 开发参考
+
+- https://nicegui.io/llms.txt
+- https://nicegui.io/zh/documentation
+
+## 6. Tortoise-ORM 开发参考
+
+- https://tortoise.github.io/

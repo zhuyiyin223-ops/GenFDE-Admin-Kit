@@ -15,7 +15,7 @@ class PasswordService:
     def hash_password(password: str) -> str:
         """生成 bcrypt 密码哈希。"""
         if bcrypt is None:
-            raise RuntimeError("缺少 bcrypt 依赖，请先安装 requirements.txt")
+            raise RuntimeError("缺少 bcrypt 依赖，请先执行 uv sync")
         salt = bcrypt.gensalt()
         hashed = bcrypt.hashpw(password.encode("utf-8"), salt)
         return hashed.decode("utf-8")
@@ -24,7 +24,7 @@ class PasswordService:
     def verify_password(plain_password: str, hashed_password: str) -> bool:
         """校验明文密码与哈希是否匹配。"""
         if bcrypt is None:
-            raise RuntimeError("缺少 bcrypt 依赖，请先安装 requirements.txt")
+            raise RuntimeError("缺少 bcrypt 依赖，请先执行 uv sync")
         return bcrypt.checkpw(
             plain_password.encode("utf-8"),
             hashed_password.encode("utf-8"),

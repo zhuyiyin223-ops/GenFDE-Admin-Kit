@@ -1,6 +1,6 @@
 # GenFDE-Admin-Kit
 
-[![Python](https://img.shields.io/badge/Python-3.10%2B-3776AB?logo=python&logoColor=white)](https://www.python.org/downloads/)
+[![Python](https://img.shields.io/badge/Python-3.12-3776AB?logo=python&logoColor=white)](https://www.python.org/downloads/)
 [![NiceGUI](https://img.shields.io/badge/NiceGUI-3.x-009485)](https://nicegui.io/)
 [![Tortoise ORM](https://img.shields.io/badge/Tortoise--ORM-1.x-1C7C54)](https://tortoise.github.io/)
 [![License: MIT](https://img.shields.io/badge/License-MIT-blue)](LICENSE)
@@ -32,16 +32,25 @@
 
 ## 启动
 
+需要 [uv](https://docs.astral.sh/uv/)。Python 3.12 由 uv 按 `.python-version` 安装，不必本机预装。
+
 ```bash
-pip install requirements.txt
+uv sync                       # 创建 .venv，并按 uv.lock 安装依赖
 cp .env.example .env          # 自行修改
-source .venv/bin/activate
-python app.py                 # 默认 http://127.0.0.1:8899
+uv run python app.py          # 默认 http://127.0.0.1:8899
 ```
 
 ## 迁移
 
 ```bash
-tortoise makemigrations         
-tortoise migrate
+uv run tortoise makemigrations
+uv run tortoise migrate
+```
+
+## 部署机依赖
+
+`deploy.py` 不创建虚拟环境。服务器安装一次 uv 后，在项目目录执行：
+
+```bash
+uv sync --frozen --no-dev
 ```
