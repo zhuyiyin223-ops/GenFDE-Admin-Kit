@@ -106,7 +106,7 @@ class AppSettings:
     """应用本体与 NiceGUI 启动参数。"""
 
     env: str = "develop"
-    version: str = "1.0.0"
+    version: str = "1.0.1"
     title: str = "GenFDE-Admin-Kit"
     favicon: str = "️🛠️"
     host: str = "127.0.0.1"
@@ -265,7 +265,22 @@ TORTOISE_ORM = {
 }
 
 # Postgres 时间列用 timestamp。Tortoise 迁移记录默认写 UTC aware，改为 naive。
+# auto_now 走 timezone.localtime()，use_tz=False 时仍返回带时区时间，asyncpg 无法写入 TIMESTAMP。
 _DatetimeField._db_postgres.SQL_TYPE = "TIMESTAMP"
+_datetime_to_db_value = _DatetimeField.to_db_value
+
+
+def _naive_datetime_to_db_value(self, value: datetime | None, instance: Any) -> datetime | None:
+    """use_tz=False 时去掉时区，保留本地墙钟时间。"""
+    from tortoise.timezone import get_use_tz
+
+    result = _datetime_to_db_value(self, value, instance)
+    if not get_use_tz() and isinstance(result, datetime) and result.tzinfo is not None:
+        return result.replace(tzinfo=None)
+    return result
+
+
+_DatetimeField.to_db_value = _naive_datetime_to_db_value
 
 
 async def _record_applied(self, app: str, name: str) -> None:

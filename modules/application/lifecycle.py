@@ -16,7 +16,7 @@ from modules.application.database import (
     ensure_initial_migrations,
     ensure_migrations_package,
 )
-from modules.application.log_setup import setup_logging
+from modules.application.log_setup import setup_logging, shutdown_logging
 from modules.cron_job import scheduler
 from modules.event_hub import EventHub
 from modules.login.services import ensure_admin_user
@@ -66,11 +66,14 @@ class ApplicationLifecycle:
         """先停止调度器与后台任务 Manager，解绑事件循环，再关闭 ORM 连接。"""
         from modules.background_job.services import shutdown_background_jobs
 
-        if scheduler.running:
-            scheduler.shutdown()
-        shutdown_background_jobs()
-        EventHub.bind_loop(None)
-        await self.orm.close_orm()
+        try:
+            if scheduler.running:
+                scheduler.shutdown()
+            shutdown_background_jobs()
+            EventHub.bind_loop(None)
+            await self.orm.close_orm()
+        finally:
+            shutdown_logging()
 
 
 def register_lifecycle(application: Any) -> ApplicationLifecycle:

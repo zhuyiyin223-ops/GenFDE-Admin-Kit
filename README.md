@@ -1,7 +1,7 @@
 # GenFDE-Admin-Kit
 
 [![Python](https://img.shields.io/badge/Python-3.12-3776AB?logo=python&logoColor=white)](https://www.python.org/downloads/)
-[![NiceGUI](https://img.shields.io/badge/NiceGUI-3.x-009485)](https://nicegui.io/)
+[![NiceGUI](https://img.shields.io/badge/NiceGUI-4.x-009485)](https://nicegui.io/)
 [![Tortoise ORM](https://img.shields.io/badge/Tortoise--ORM-1.x-1C7C54)](https://tortoise.github.io/)
 [![License: MIT](https://img.shields.io/badge/License-MIT-blue)](LICENSE)
 
@@ -10,10 +10,10 @@
 
 ## AI-Native 核心优势
 
-- 纯 Python 前后端一体化，单一上下文，无需前后端联调，消除 AI 的“精神分裂”
+- 纯 Python 前后端一体化，单一上下文，结构极简，无需前后端联调，消除 AI 的“精神分裂”
 - 类型提示一穿到底：AI 的“自动纠错导航”
 - 组件即函数：消除了复杂的“生命周期”和“打包构建”
-- AGENTS.md 工程级约束，与 ruff 静态强管制
+- AGENTS.md 工程级约束
 
 ## 核心功能
 

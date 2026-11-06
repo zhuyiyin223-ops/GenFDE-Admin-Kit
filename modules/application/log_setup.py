@@ -6,6 +6,8 @@
 
 from __future__ import annotations
 
+import atexit
+import gc
 import inspect
 import logging
 import sys
@@ -60,6 +62,21 @@ def setup_logging() -> None:
         _configure_sinks()
         _sinks_configured = True
     _intercept_stdlib_logging()
+
+
+def shutdown_logging() -> None:
+    """关闭全部 sink，并立刻回收 enqueue 文件日志占用的信号量。
+
+    热重载子进程由 multiprocessing spawn 拉起，退出时不等待 SemLock 析构。
+    三个 ``enqueue=True`` 文件 sink 各注册 8 个信号量；不在这里回收，
+    resource tracker 会在进程退出时报 24 个泄漏。
+    """
+    logger.remove()
+    gc.collect()
+
+
+atexit.unregister(logger.remove)
+atexit.register(shutdown_logging)
 
 
 def _configure_sinks() -> None:
